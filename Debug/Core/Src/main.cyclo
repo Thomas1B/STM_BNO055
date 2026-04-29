@@ -1,0 +1,12 @@
+../Drivers/CMSIS/Include/core_cm4.h:2064:26:ITM_SendChar	4
+../Core/Inc/bno055_stm32.h:22:6:bno055_assignI2C	1
+../Core/Inc/bno055_stm32.h:26:6:bno055_delay	1
+../Core/Inc/bno055_stm32.h:34:6:bno055_writeData	23
+../Core/Inc/bno055_stm32.h:98:6:bno055_readData	1
+../Core/Src/main.c:70:5:main	1
+../Core/Src/main.c:160:6:SystemClock_Config	4
+../Core/Src/main.c:211:13:MX_I2C1_Init	2
+../Core/Src/main.c:243:13:MX_USART2_UART_Init	2
+../Core/Src/main.c:274:13:MX_GPIO_Init	1
+../Core/Src/main.c:308:5:__io_putchar	1
+../Core/Src/main.c:319:6:Error_Handler	1

@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bno055_stm32.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,7 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+bno055_vector_t v; // Create an instance of the BNO055 sensor structure
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,7 +94,11 @@ int main(void) {
 	MX_USART2_UART_Init();
 	MX_I2C1_Init();
 	/* USER CODE BEGIN 2 */
+	printf("BNO055 IMU Sensor Test\r\n");
 
+	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
+	bno055_setup(); // Initialize the BNO055 sensor
+	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -102,6 +107,48 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
+
+//		bno055_self_test_result_t selfTest = bno055_getSelfTestResult(); // Get the self-test results
+//		printf("Self-Test Results: Accel=%d, Mag=%d, Gyro=%d, mcu=%d\r\n",
+//				selfTest.accState, selfTest.magState, selfTest.gyrState,
+//				selfTest.mcuState);
+//
+//		bno055_calibration_state_t calibState = bno055_getCalibrationState(); // Get the calibration state
+//		printf("Calibration State: Sys=%d, Gyro=%d, Accel=%d, Mag=%d\r\n",
+//				calibState.sys, calibState.gyro, calibState.accel,
+//				calibState.mag);
+//
+//		bno055_calibration_data_t calibData = bno055_getCalibrationData(); // Get the calibration data
+//		printf("Calibration Data: Offset: %d, Radius: %d\r\n", calibData.offset,
+//				calibData.radius);
+
+		v = bno055_getVectorEuler(); // Get the Euler angles (heading, roll, pitch)
+//		printf("Heading: %.2f, Roll: %.2f, Pitch: %.2f\r\n", v.x, v.y, v.z);
+
+		v = bno055_getVectorQuaternion(); // Get the quaternion (w, x, y, z)
+//		printf("Quaternion: w=%.2f, x=%.2f, y=%.2f, z=%.2f\r\n", v.w, v.x, v.y, v.z);
+
+		v = bno055_getVectorMagnetometer(); // Get the magnetometer readings (x, y, z) microteslas
+//		printf("Magnetometer: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
+
+		v = bno055_getVectorGyroscope(); // Get the gyroscope readings (x, y, z)
+//		printf("Gyroscope: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
+
+		v = bno055_getVectorAccelerometer(); // Get the accelerometer readings (x, y, z)
+//		printf("Accelerometer: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
+
+		v = bno055_getVectorLinearAccel(); // Get the linear acceleration readings (x, y, z)
+//		printf("Linear Acceleration: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
+
+		v = bno055_getVectorGravity(); // Get the gravity readings (x, y, z)
+//		printf("Gravity: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
+
+		int8_t t = bno055_getTemp(); // Get the temperature reading (x is used for temperature)
+//		printf("Temperature: %d C\r\n", t);
+
+		printf("\n");
+		HAL_Delay(1000); // Delay for a while before the next reading
+
 	}
 	/* USER CODE END 3 */
 }
@@ -171,7 +218,7 @@ static void MX_I2C1_Init(void) {
 
 	/* USER CODE END I2C1_Init 1 */
 	hi2c1.Instance = I2C1;
-	hi2c1.Init.ClockSpeed = 10000;
+	hi2c1.Init.ClockSpeed = 100000;
 	hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
 	hi2c1.Init.OwnAddress1 = 0;
 	hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -258,7 +305,11 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
-
+int __io_putchar(int ch) {
+//	HAL_UART_Transmit(&huart2, (uint8_t*) &ch, 1, HAL_MAX_DELAY); // Transmit the character over UART
+	ITM_SendChar(ch); // Send the character to the SWO console (for debugging)
+	return ch;
+}
 /* USER CODE END 4 */
 
 /**

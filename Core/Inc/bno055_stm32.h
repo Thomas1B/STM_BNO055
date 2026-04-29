@@ -5,7 +5,9 @@
   extern "C" {
 #endif
 
-#include "i2c.h"
+//#include "i2c.h"
+#include "main.h"
+#include <stdio.h>
 
 #ifdef FREERTOS_ENABLED
 #include "FreeRTOS.h"
