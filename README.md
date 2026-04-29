@@ -1,4 +1,6 @@
-# STM BNO055 Sensor 
+# STM BNO055 Sensor
+
+using: https://github.com/ivyknob/bno055_stm32/tree/master
 
 ## BNO0555 Features
 
