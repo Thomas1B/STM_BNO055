@@ -47,6 +47,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 bno055_vector_t v; // Create an instance of the BNO055 sensor structure
+int8_t temperature; // Variable to hold the temperature reading
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,6 +100,21 @@ int main(void) {
 	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 	bno055_setup(); // Initialize the BNO055 sensor
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
+
+	// Scan the I2C bus for devices and print their addresses
+	for (uint8_t addr = 1; addr < 128; addr++) {
+		if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
+			printf("Device found at address:0x%02X\r\n", addr);
+		}
+	}
+
+	// Read and print the sensor's chip ID and bootloader revision
+	printf("Bootloader Revision: %d \r\n", bno055_getBootloaderRevision());
+	printf("Status: %d \r\n", bno055_getSystemStatus());
+	printf("Error: %d \r\n", bno055_getSystemError());
+	printf("SW Revision: %d \r\n", bno055_getSWRevision());
+	HAL_Delay(5000); // Delay for a moment to allow the sensor to initialize properly
+
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -121,7 +137,6 @@ int main(void) {
 //		bno055_calibration_data_t calibData = bno055_getCalibrationData(); // Get the calibration data
 //		printf("Calibration Data: Offset: %d, Radius: %d\r\n", calibData.offset,
 //				calibData.radius);
-
 		v = bno055_getVectorEuler(); // Get the Euler angles (heading, roll, pitch)
 //		printf("Heading: %.2f, Roll: %.2f, Pitch: %.2f\r\n", v.x, v.y, v.z);
 
@@ -143,7 +158,7 @@ int main(void) {
 		v = bno055_getVectorGravity(); // Get the gravity readings (x, y, z)
 //		printf("Gravity: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
 
-		int8_t t = bno055_getTemp(); // Get the temperature reading (x is used for temperature)
+		temperature = bno055_getTemp(); // Get the temperature reading (x is used for temperature)
 //		printf("Temperature: %d C\r\n", t);
 
 		printf("\n");
