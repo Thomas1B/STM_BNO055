@@ -22,14 +22,21 @@ datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/downloa
   - System status & error codes
 
 ## Setup
-In Stm32CubeMX, pick what I2C pins you want to use (leave everything default)
-- Add `#include "bno055_stm32.h"` to "USER CODE BEGIN Includes"
-- Add the following to "USER CODE BEGIN 2"
+- Copy `bno055.c`, `bno055.h`, and `bno055_stm32.h` to your project.
+- In Stm32CubeMX, pick what I2C pins you want to use (BNO0555 is limited to 100Hz, so leave everything default, Standard Mode works fine).
+- Add `#include "bno055_stm32.h"` to "USER CODE BEGIN Includes".
+- Set I2C address `#define BNO055_I2C_ADDR` in bno055.h:
+```C
+#define BNO055_I2C_ADDR    BNO055_I2C_ADDR_LO    // For 0x28
+#define BNO055_I2C_ADDR    BNO055_I2C_ADDR_HI    // For 0x29
 ```
+- Add the following to "USER CODE BEGIN 2"
+```C
 bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 bno055_setup(); // Initialize the BNO055 sensor
 bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
 
+// Optional test print
 // Scan the I2C bus for devices and print their addresses
 for (uint8_t addr = 1; addr < 128; addr++) {
   if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
@@ -38,6 +45,15 @@ for (uint8_t addr = 1; addr < 128; addr++) {
 }
 ```
 - Now tests the code...
+  
+Example code:
+```C
+// Add this to "User Code Begin 3"
+bno055_vector_t v = bno055_getVectorEuler();
+printf("Heading: %.2f Roll: %.2f Pitch: %.2f\r\n", v.x, v.y, v.z);
+HAL_Delay(1000);
+```
+
 
 ## Operation Modes
 
