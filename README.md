@@ -20,7 +20,9 @@ datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/downloa
 - System Diagnostic:
   - Self-test results
   - System status & error codes
- 
+
+## Setup
+In Stm32CubeMX, pick what I2C pins you want to use (leave everything default)
 
 ### System Error Codes
 This are read by using `printf("Error: %d \r\n", bno055_getSystemError());`
