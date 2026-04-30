@@ -23,6 +23,22 @@ datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/downloa
 
 ## Setup
 In Stm32CubeMX, pick what I2C pins you want to use (leave everything default)
+- Add `#include "bno055_stm32.h"` to "USER CODE BEGIN Includes"
+- Add the following to "USER CODE BEGIN 2"
+```
+bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
+bno055_setup(); // Initialize the BNO055 sensor
+bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
+
+// Scan the I2C bus for devices and print their addresses
+for (uint8_t addr = 1; addr < 128; addr++) {
+  if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
+    printf("Device found at address:0x%02X\r\n", addr);
+  }
+}
+```
+- Now tests the code...
+
 
 ### System Error Codes
 This are read by using `printf("Error: %d \r\n", bno055_getSystemError());`
