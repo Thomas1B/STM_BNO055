@@ -39,18 +39,38 @@ for (uint8_t addr = 1; addr < 128; addr++) {
 ```
 - Now tests the code...
 
+## Operation Modes
 
-### System Error Codes
+| Mode Name      | Value (hex) | What it does                                           |
+|----------------|------------|--------------------------------------------------------|
+| `CONFIGMODE`   | `0x00`     | Configuration mode (required before changing settings) |
+| `ACCONLY`      | `0x01`     | Accelerometer only                                     |
+| `MAGONLY`      | `0x02`     | Magnetometer only                                      |
+| `GYRONLY`      | `0x03`     | Gyroscope only                                         |
+| `ACCMAG`       | `0x04`     | Accelerometer + Magnetometer                           |
+| `ACCGYRO`      | `0x05`     | Accelerometer + Gyroscope                              |
+| `MAGGYRO`      | `0x06`     | Magnetometer + Gyroscope                               |
+| `AMG`          | `0x07`     | Accel + Mag + Gyro (no fusion)                         |
+| `IMUPLUS`      | `0x08`     | Accel + Gyro (fusion, no mag)                          |
+| `COMPASS`      | `0x09`     | Accel + Mag (fusion for heading)                       |
+| `M4G`          | `0x0A`     | Mag + Accel (gyro-free fusion)                         |
+| `NDOF_FMC_OFF` | `0x0B`     | Full fusion (no fast mag calibration)                  |
+| `NDOF`         | `0x0C`     | Full 9-DOF sensor fusion                               |
+
+
+## System Error Codes
 This are read by using `printf("Error: %d \r\n", bno055_getSystemError());`
 
-- `0x00` - NO ERROR
-- `0x01` - PERIPHERAL INITIALIZATION ERROR
-- `0x02` - SYSTEM INITIALIZATION ERROR
-- `0x03` - SELF TEST FAILED
-- `0x04` - MAP VAL OUT OF RANGE
-- `0x05` - MAP ADDR OUT OF RANGE
-- `0x06` - REG MAP WRITE ERROR
-- `0x07` - LOW PWR MODE NOT AVAILABLE FOR SELECTED OPR MODE
-- `0x08` - ACCEL PWR MODE NOT AVAILABLE
-- `0x09` - FUSION ALGO CONF ERROR
-- `0x0A` - SENSOR CONF ERROR
+| Code (hex) | Description                                      |
+|------------|--------------------------------------------------|
+| `0x00`     | No error                                         |
+| `0x01`     | Peripheral initialization error                  |
+| `0x02`     | System initialization error                      |
+| `0x03`     | Self test failed                                 |
+| `0x04`     | Map value out of range                           |
+| `0x05`     | Map address out of range                         |
+| `0x06`     | Register map write error                         |
+| `0x07`     | Low power mode not available for selected mode   |
+| `0x08`     | Accelerometer power mode not available           |
+| `0x09`     | Fusion algorithm configuration error             |
+| `0x0A`     | Sensor configuration error                       |
