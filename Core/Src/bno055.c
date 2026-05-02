@@ -10,12 +10,49 @@ uint16_t quaScale = (1<<14);    // 2^14
 
 void bno055_setPage(uint8_t page) { bno055_writeData(BNO055_PAGE_ID, page); }
 
+
+/**
+ * @brief  Gets the current operation mode of the BNO055.
+ *
+ * @retval bno055_opmode_t Current operation mode of the BNO055:
+ * 	   - 0, 0x00, BNO055_OPERATION_MODE_CONFIG0,
+ * 	   - 1, 0x01, BNO055_OPERATION_MODE_ACCONLY,
+ * 	   - 2, 0x02, BNO055_OPERATION_MODE_MAGONLY,
+ * 	   - 3, 0x03, BNO055_OPERATION_MODE_GYRONLY,
+ * 	   - 4, 0x04, BNO055_OPERATION_MODE_ACCMAG,
+ * 	   - 5, 0x05, BNO055_OPERATION_MODE_ACCGYRO,
+ * 	   - 6, 0x06, BNO055_OPERATION_MODE_MAGGYRO,
+ * 	   - 7, 0x07, BNO055_OPERATION_MODE_AMG (fusion mode),
+ * 	   - 8, 0x08, BNO055_OPERATION_MODE_IMU,
+ * 	   - 9, 0x09, BNO055_OPERATION_MODE_COMPASS,
+ * 	   - 10, 0x0A, BNO055_OPERATION_MODE_M4G,
+ * 	   - 11, 0x0B, BNO055_OPERATION_MODE_NDOF_FMC_OFF,
+ * 	   - 12, 0x0C, BNO055_OPERATION_MODE_NDOF (fusion mode)
+ */
 bno055_opmode_t bno055_getOperationMode() {
   bno055_opmode_t mode;
   bno055_readData(BNO055_OPR_MODE, &mode, 1);
   return mode;
 }
 
+/**
+ * @brief  Sets the current operation mode of the BNO055.
+ *
+ * @retval bno055_opmode_t Current operation mode of the BNO055:
+ * 	   - 0x00 = Configuration mode (required to before changing mode)
+ * 	   - 0x01 = Acceleration only
+ * 	   - 0x02 = Magnetometer only
+ * 	   - 0x03 = Gyroscope only
+ * 	   - 0x04 = Accelerometer and Magnetometer
+ * 	   - 0x05 = Accelerometer and Gyroscope
+ * 	   - 0x06 = Magnetometer and Gyroscope
+ * 	   - 0x07 = Accelerometer, Magnetometer, Gyroscope (no fusion algorithms)
+ * 	   - 0x08 = Accel + Gyro (fusion algorithms, no  mag)
+ * 	   - 0x09 = Accel + Mag (fusion for heading)
+ * 	   - 0x0A = Mag + Accel (Gro-free fusion)
+ * 	   - 0x0B = Full Fusion (no fast mag calibratiob)
+ * 	   - 0x0C = Full Fusion 9-DOF fusion
+ */
 void bno055_setOperationMode(bno055_opmode_t mode) {
   bno055_writeData(BNO055_OPR_MODE, mode);
   if (mode == BNO055_OPERATION_MODE_CONFIG) {
@@ -25,10 +62,18 @@ void bno055_setOperationMode(bno055_opmode_t mode) {
   }
 }
 
+/**
+ * @brief  Sets the BNO055 to configuration mode. Must be in this mode to change settings.
+ */
 void bno055_setOperationModeConfig() {
   bno055_setOperationMode(BNO055_OPERATION_MODE_CONFIG);
 }
 
+/**
+ * @brief  Sets the BNO055 to NDOF fusion mode.
+ * This mode uses the accelerometer, magnetometer, and gyroscope to provide fused orientation data.
+ * Full 9-DOF
+ */
 void bno055_setOperationModeNDOF() {
   bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 }
@@ -50,6 +95,11 @@ void bno055_reset() {
   bno055_delay(700);
 }
 
+/**
+ * @brief  Gets the temperature reading from the BNO055.
+ * The temperature is stored in the BNO055_TEMP register and is represented as a signed 8-bit integer.
+ * Value in degrees Celsius.
+ */
 int8_t bno055_getTemp() {
   bno055_setPage(0);
   uint8_t t;
@@ -57,6 +107,10 @@ int8_t bno055_getTemp() {
   return t;
 }
 
+/**
+ * @brief  Initializes the BNO055 sensor. This function should be called before any other functions.
+ * It performs a reset, checks the chip ID, and sets the operation mode to configuration mode.
+ */
 void bno055_setup() {
   bno055_reset();
 
@@ -87,6 +141,7 @@ uint8_t bno055_getBootloaderRevision() {
   return tmp;
 }
 
+
 uint8_t bno055_getSystemStatus() {
   bno055_setPage(0);
   uint8_t tmp;
@@ -107,6 +162,22 @@ bno055_self_test_result_t bno055_getSelfTestResult() {
   return res;
 }
 
+/**
+ * @brief  Gets the system status/error code from the BNO055.
+ *
+ * @retval uint8_t System status code:
+ *         - 0, 0x00 = No error
+ *         - 1, 0x01 = Peripheral initialization error
+ *         - 2, 0x02 = System initialization error
+ *         - 3, 0x03 = Self test result failed
+ *         - 4, 0x04 = Register map value out of range
+ *         - 5, 0x05 = Register map address out of range
+ *         - 6, 0x06 = Register map write error
+ *         - 7, 0x07 = Low power mode not available for selected operation mode
+ *         - 8, 0x08 = Accelerometer power mode not available
+ *         - 9, 0x09 = Fusion algorithm configuration error
+ *         - 10, 0x0A = Sensor configuration error *
+ */
 uint8_t bno055_getSystemError() {
   bno055_setPage(0);
   uint8_t tmp;
@@ -169,6 +240,19 @@ void bno055_setCalibrationData(bno055_calibration_data_t calData) {
   bno055_setOperationMode(operationMode);
 }
 
+/**
+ * @brief  Gets a vector reading from the BNO055.
+ * The type of vector is determined by the `vec` parameter.
+ *
+ * @param vec The type of vector to read:
+ * 	   - BNO055_VECTOR_ACCELEROMETER: Acceleration vector (x, y, z) in m/s^2
+ * 	   - BNO055_VECTOR_LINEARACCEL: Linear acceleration vector (x, y, z) in m/s^2 (acceleration minus gravity)
+ * 	   - BNO055_VECTOR_GRAVITY: Gravity vector (x, y, z) in m/s^2
+ * 	   - BNO055_VECTOR_MAGNETOMETER: Magnetometer vector (x, y, z) in microteslas
+ * 	   - BNO055_VECTOR_GYROSCOPE: Gyroscope vector (x, y, z) in degrees per second
+ * 	   - BNO055_VECTOR_EULER: Euler angles (heading, roll, pitch) in degrees
+ * 	   - BNO055_VECTOR_QUATERNION: Quaternion (w, x, y, z) with no units
+ */
 bno055_vector_t bno055_getVector(uint8_t vec) {
   bno055_setPage(0);
   uint8_t buffer[8];    // Quaternion need 8 bytes
