@@ -1,8 +1,8 @@
 # STM BNO055 Sensor
 
-built from: https://github.com/ivyknob/bno055_stm32/tree/master
+Built from: https://github.com/ivyknob/bno055_stm32/tree/master
 
-datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf#%5B%7B%22num%22%3A33%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C68%2C715%2C0%5D)
+Sensor datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf#%5B%7B%22num%22%3A33%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C68%2C715%2C0%5D)
 
 ## BNO0555 Features
 
