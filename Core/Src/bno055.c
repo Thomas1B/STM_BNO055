@@ -292,24 +292,59 @@ bno055_vector_t bno055_getVector(uint8_t vec) {
   return xyz;
 }
 
+/*
+ * @brief  Gets the accelerometer vector (x, y, z) from the BNO055 in m/s^2.
+ * This function is a wrapper around `bno055_getVector` with the vector type set to `BNO055_VECTOR_ACCELEROMETER`.
+ */
 bno055_vector_t bno055_getVectorAccelerometer() {
   return bno055_getVector(BNO055_VECTOR_ACCELEROMETER);
 }
+
+/*
+ * @brief  Gets the magnetometer vector (x, y, z) from the BNO055 in microteslas.
+ * This function is a wrapper around `bno055_getVector` with the vector type set to `BNO055_VECTOR_MAGNETOMETER`.
+ */
 bno055_vector_t bno055_getVectorMagnetometer() {
   return bno055_getVector(BNO055_VECTOR_MAGNETOMETER);
 }
+
+/*
+ * @brief  Gets the gyroscope vector (x, y, z) from the BNO055 in degrees per second.
+ * This function is a wrapper around `bno055_getVector` with the vector type set to `BNO055_VECTOR_GYROSCOPE`.
+ */
 bno055_vector_t bno055_getVectorGyroscope() {
   return bno055_getVector(BNO055_VECTOR_GYROSCOPE);
 }
+
+/*
+ * @brief  Gets the Euler angles (heading, roll, pitch) from the BNO055 in degrees.
+ * This function is a wrapper around `bno055_getVector` with the vector type set to `BNO055_VECTOR_EULER`.
+ */
 bno055_vector_t bno055_getVectorEuler() {
   return bno055_getVector(BNO055_VECTOR_EULER);
 }
+
+/*
+ * @brief  Gets the linear acceleration vector (x, y, z) from the BNO055 in m/s^2.
+ * Linear acceleration is the acceleration minus gravity.
+ * This function is a wrapper around `bno055_getVector` with the vector type set to `BNO055_VECTOR_LINEARACCEL`.
+ */
 bno055_vector_t bno055_getVectorLinearAccel() {
   return bno055_getVector(BNO055_VECTOR_LINEARACCEL);
 }
+
+/*
+ * @brief  Gets the gravity vector (x, y, z) from the BNO055 in m/s^2.
+ * This function is a wrapper around `bno055_getVector` with the vector type set to `BNO055_VECTOR_GRAVITY`.
+ */
 bno055_vector_t bno055_getVectorGravity() {
   return bno055_getVector(BNO055_VECTOR_GRAVITY);
 }
+
+/*
+ * @brief  Gets the quaternion (w, x, y, z) from the BNO055 with no units.
+ * This function is a wrapper around `bno055_getVector` with the vector type set to `BNO055_VECTOR_QUATERNION`.
+ */
 bno055_vector_t bno055_getVectorQuaternion() {
   return bno055_getVector(BNO055_VECTOR_QUATERNION);
 }
