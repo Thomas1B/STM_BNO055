@@ -113,7 +113,7 @@ int main(void) {
 	printf("Status: %d \r\n", bno055_getSystemStatus());
 	printf("Error: %d \r\n", bno055_getSystemError());
 	printf("SW Revision: %d \r\n", bno055_getSWRevision());
-	HAL_Delay(5000); // Delay for a moment to allow the sensor to initialize properly
+	HAL_Delay(5000);
 
 	/* USER CODE END 2 */
 
