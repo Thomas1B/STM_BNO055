@@ -116,6 +116,7 @@ uint8_t bno055_getSystemStatus();
 
 ## System Error Codes
 
+These can be ignored if System Status is 0.
 
 | Code (hex) | Description                                      |
 |------------|--------------------------------------------------|
