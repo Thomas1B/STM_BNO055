@@ -4,7 +4,7 @@ Built from: https://github.com/ivyknob/bno055_stm32/tree/master
 
 Sensor datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf#%5B%7B%22num%22%3A33%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C68%2C715%2C0%5D)
 
-## BNO0555 Features
+## BNO055 Features
 
 - Sensor data:
   - Acceleration $\rightarrow m/s^2$
@@ -61,8 +61,10 @@ HAL_Delay(1000);
 
 Now test the code...
 
+<hr>
 
 ## Operation Modes
+
 
 | Mode Name      | Value (hex) | What it does                                           |
 |----------------|------------|--------------------------------------------------------|
@@ -80,9 +82,33 @@ Now test the code...
 | `NDOF_FMC_OFF` | `0x0B`     | Full fusion (no fast mag calibration)                  |
 | `NDOF`         | `0x0C`     | Full 9-DOF sensor fusion                               |
 
+This is set by 
+```C
+bno055_setOperationMode(mode);
+```
+
+
+## System Status Codes
+
+| Value | Hex Value | Description                              |
+| ----- | --------- | ---------------------------------------- |
+| 0     | `0x00`    | Idle                                     |
+| 1     | `0x01`    | System error                             |
+| 2     | `0x02`    | Initializing peripherals                 |
+| 3     | `0x03`    | System initialization                    |
+| 4     | `0x04`    | Executing self-test                      |
+| 5     | `0x05`    | Sensor fusion algorithm running          |
+| 6     | `0x06`    | System running without fusion algorithms |
+
+This is read by 
+```C
+uint8_t bno055_getSystemStatus();
+```
+
+
 
 ## System Error Codes
-This are read by using `printf("Error: %d \r\n", bno055_getSystemError());`
+
 
 | Code (hex) | Description                                      |
 |------------|--------------------------------------------------|
@@ -97,3 +123,8 @@ This are read by using `printf("Error: %d \r\n", bno055_getSystemError());`
 | `0x08`     | Accelerometer power mode not available           |
 | `0x09`     | Fusion algorithm configuration error             |
 | `0x0A`     | Sensor configuration error                       |
+
+This is read by using 
+```C
+printf("Error: %d \r\n", bno055_getSystemError());`
+```
