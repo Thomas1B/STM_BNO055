@@ -39,10 +39,6 @@ Sensor datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/
 
 - Add the following to "USER CODE BEGIN 2"
 ```C
-bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
-bno055_setup(); // Initialize the BNO055 sensor
-bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
-
 // Optional test print
 // Scan the I2C bus for devices and print their addresses
 for (uint8_t addr = 1; addr < 128; addr++) {
@@ -50,6 +46,10 @@ for (uint8_t addr = 1; addr < 128; addr++) {
     printf("Device found at address:0x%02X\r\n", addr);
   }
 }
+
+bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
+bno055_setup(); // Initialize the BNO055 sensor
+bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
 
 printf("Status: %d \r\n", bno055_getSystemStatus());
 if (bno055_getSystemStatus() != 0) {
