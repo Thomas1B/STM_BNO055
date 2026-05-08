@@ -30,6 +30,13 @@ Sensor datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/
 #define BNO055_I2C_ADDR    BNO055_I2C_ADDR_LO    // For 0x28
 #define BNO055_I2C_ADDR    BNO055_I2C_ADDR_HI    // For 0x29
 ```
+
+- Add the following to "USER CODE BEGIN Includes"
+```C
+#include "bno055_stm32.h"
+#include <stdio.h>
+```
+
 - Add the following to "USER CODE BEGIN 2"
 ```C
 bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
@@ -44,15 +51,15 @@ for (uint8_t addr = 1; addr < 128; addr++) {
   }
 }
 ```
-- Now tests the code...
-  
-Example code:
+- Add to USER CODE BEGIN 3
 ```C
 // Add this to "User Code Begin 3"
 bno055_vector_t v = bno055_getVectorEuler();
 printf("Heading: %.2f Roll: %.2f Pitch: %.2f\r\n", v.x, v.y, v.z);
 HAL_Delay(1000);
 ```
+
+Now test the code...
 
 
 ## Operation Modes
