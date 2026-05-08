@@ -90,7 +90,8 @@ Now test the code...
 
 This is set by 
 ```C
-bno055_setOperationMode(mode);
+bno055_setOperationMode(CONFIGMODE);
+bno055_setOperationMode(mode); // new mode
 ```
 
 
