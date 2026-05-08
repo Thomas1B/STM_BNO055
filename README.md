@@ -137,7 +137,22 @@ Axis sign mapping allows individual axes to be inverted.
  
 The BNO055 should be placed into CONFIGMODE before calling
 this function.
- 
+
+Axis_Map_Config:
+| Binary Value | Decimal Value | Axis Representation |
+| ------------ | ------------- | ------------------- |
+| `00`         | `0`           | X - Axis            |
+| `01`         | `1`           | Y - Axis            |
+| `10`         | `2`           | Z - Axis            |
+| `11`         | `3`           | Invalid             |
+
+Axis_Sign_Map:
+| Value | Sign     |
+| ----- | -------- |
+| `0`   | Positive |
+| `1`   | Negative |
+
+
  Example:
  ```C
   bno055_axis_map_t axisMap = {
