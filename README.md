@@ -176,3 +176,29 @@ Axis_Sign_Map:
   bno055_setAxisMap(axisMap);
   bno055_setOperationMode(NDOF); // or what mode yyou prefer.
  ```
+
+## Calibration
+
+Read 3.11 of the BNO055 datasheet proper calibration
+
+Calibration States:
+| Code | Description    |
+|------|----------------|
+| 0    | Uncalibrated   |
+| 1    | Partially      |
+| 2    | Mostly         |
+| 3    | Calibrated     |
+
+
+```C
+bno055_calibration_state_t cal = bno055_getCalibrationState();
+
+printf("SYS: %d\r\n", cal.sys);
+printf("GYRO: %d\r\n", cal.gyro);
+printf("ACCEL: %d\r\n", cal.accel);
+printf("MAG: %d\r\n\n", cal.mag);
+
+HAL_Delay(1000);
+```
+
+
