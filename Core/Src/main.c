@@ -97,10 +97,6 @@ int main(void) {
 	/* USER CODE BEGIN 2 */
 	printf("BNO055 IMU Sensor Test\r\n");
 
-	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
-	bno055_setup(); // Initialize the BNO055 sensor
-	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
-
 	// Scan the I2C bus for devices and print their addresses
 	for (uint8_t addr = 1; addr < 128; addr++) {
 		if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
@@ -108,12 +104,16 @@ int main(void) {
 		}
 	}
 
-	// Read and print the sensor's chip ID and bootloader revision
-	printf("Bootloader Revision: %d \r\n", bno055_getBootloaderRevision());
-	printf("Status: %d \r\n", bno055_getSystemStatus());
-	printf("Error: %d \r\n", bno055_getSystemError());
-	printf("SW Revision: %d \r\n", bno055_getSWRevision());
-	HAL_Delay(5000);
+	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
+	bno055_setup();
+	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
+
+
+	printf("Status: 0x%02X \r\n", bno055_getSystemStatus());
+	if (bno055_getSystemStatus() == 1) {
+		printf("System Error: 0x%02X \r\n", bno055_getSystemError());
+	}
+	HAL_Delay(2000);
 
 	/* USER CODE END 2 */
 
@@ -124,44 +124,9 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 
-//		bno055_self_test_result_t selfTest = bno055_getSelfTestResult(); // Get the self-test results
-//		printf("Self-Test Results: Accel=%d, Mag=%d, Gyro=%d, mcu=%d\r\n",
-//				selfTest.accState, selfTest.magState, selfTest.gyrState,
-//				selfTest.mcuState);
-//
-//		bno055_calibration_state_t calibState = bno055_getCalibrationState(); // Get the calibration state
-//		printf("Calibration State: Sys=%d, Gyro=%d, Accel=%d, Mag=%d\r\n",
-//				calibState.sys, calibState.gyro, calibState.accel,
-//				calibState.mag);
-//
-//		bno055_calibration_data_t calibData = bno055_getCalibrationData(); // Get the calibration data
-//		printf("Calibration Data: Offset: %d, Radius: %d\r\n", calibData.offset,
-//				calibData.radius);
 		v = bno055_getVectorEuler(); // Get the Euler angles (heading, roll, pitch)
-//		printf("Heading: %.2f, Roll: %.2f, Pitch: %.2f\r\n", v.x, v.y, v.z);
+		printf("Heading: %.2f, Roll: %.2f, Pitch: %.2f\r\n", v.x, v.y, v.z);
 
-		v = bno055_getVectorQuaternion(); // Get the quaternion (w, x, y, z)
-//		printf("Quaternion: w=%.2f, x=%.2f, y=%.2f, z=%.2f\r\n", v.w, v.x, v.y, v.z);
-
-		v = bno055_getVectorMagnetometer(); // Get the magnetometer readings (x, y, z) microteslas
-//		printf("Magnetometer: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
-
-		v = bno055_getVectorGyroscope(); // Get the gyroscope readings (x, y, z)
-//		printf("Gyroscope: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
-
-		v = bno055_getVectorAccelerometer(); // Get the accelerometer readings (x, y, z)
-//		printf("Accelerometer: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
-
-		v = bno055_getVectorLinearAccel(); // Get the linear acceleration readings (x, y, z)
-//		printf("Linear Acceleration: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
-
-		v = bno055_getVectorGravity(); // Get the gravity readings (x, y, z)
-//		printf("Gravity: x=%.2f, y=%.2f, z=%.2f\r\n", v.x, v.y, v.z);
-
-		temperature = bno055_getTemp(); // Get the temperature reading (x is used for temperature)
-//		printf("Temperature: %d C\r\n", t);
-
-		printf("\n");
 		HAL_Delay(1000); // Delay for a while before the next reading
 
 	}

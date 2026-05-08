@@ -156,6 +156,12 @@ void bno055_setup() {
   bno055_delay(10);
 }
 
+/*
+ * @brief  Gets the software revision from the BNO055.
+ * The software revision is stored in the BNO055_SW_REV_ID_LSB and BNO055_SW_REV_ID_MSB registers and is represented as a signed 16-bit integer.
+ *
+ *
+ */
 int16_t bno055_getSWRevision() {
   bno055_setPage(0);
   uint8_t buffer[2];
@@ -163,6 +169,12 @@ int16_t bno055_getSWRevision() {
   return (int16_t)((buffer[1] << 8) | buffer[0]);
 }
 
+/*
+ * @brief  Gets the bootloader revision from the BNO055.
+ * The bootloader revision is stored in the BNO055_BL_REV_ID register and is represented as an unsigned 8-bit integer.
+ *
+ * @note: this is read only.
+ */
 uint8_t bno055_getBootloaderRevision() {
   bno055_setPage(0);
   uint8_t tmp;
@@ -403,6 +415,8 @@ bno055_vector_t bno055_getVectorQuaternion() {
  *
  * The BNO055 should be placed into CONFIGMODE before calling
  * this function.
+ *
+ * @param axis Structure containing axis remap and sign configuration.
  */
 void bno055_setAxisMap(bno055_axis_map_t axis) {
   uint8_t axisRemap = (axis.z << 4) | (axis.y << 2) | (axis.x);
