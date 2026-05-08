@@ -128,3 +128,28 @@ This is read by using
 ```C
 printf("Error: %d \r\n", bno055_getSystemError());`
 ```
+
+## Remapping Coordinate Axes
+Axis remapping changes which physical sensor axis is used as
+the logical X, Y, and Z axes.
+
+Axis sign mapping allows individual axes to be inverted.
+ 
+The BNO055 should be placed into CONFIGMODE before calling
+this function.
+ 
+ Example:
+ ```C
+  bno055_axis_map_t axisMap = {
+      .x = 1,
+      .y = 0,
+      .z = 2,
+      .x_sign = 0,
+      .y_sign = 1,
+      .z_sign = 0
+  };
+ 
+  bno055_setOperationMode(CONFIGMODE);
+  bno055_setAxisMap(axisMap);
+  bno055_setOperationMode(NDOF); // or what mode yyou prefer.
+ ```
