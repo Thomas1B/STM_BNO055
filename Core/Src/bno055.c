@@ -8,6 +8,14 @@ uint16_t eulerScale = 16;
 uint16_t magScale = 16;
 uint16_t quaScale = (1<<14);    // 2^14
 
+
+/**
+ * @brief  Sets the current register page of the BNO055.
+ * The BNO055 has two register pages (0 and 1) that contain different sets of registers.
+ * This function allows you to switch between the two pages to access all the registers.
+ *
+ * @param page The register page to set (0 or 1)
+ */
 void bno055_setPage(uint8_t page) { bno055_writeData(BNO055_PAGE_ID, page); }
 
 
@@ -78,18 +86,39 @@ void bno055_setOperationModeNDOF() {
   bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 }
 
+/**
+ * @brief Enables or disables the use of a 32kHz external crystal oscillator on the BNO055.
+ * Using the external crystal can improve the timing accuracy and sensor fusion stability.
+ *
+ * @param state Set to true to enable the external crystal, or false to disable it.
+ * @note The external crystal bit is bit 7 of the SYS_TRIGGER register.
+ */
 void bno055_setExternalCrystalUse(bool state) {
   bno055_setPage(0);
   uint8_t tmp = 0;
   bno055_readData(BNO055_SYS_TRIGGER, &tmp, 1);
   tmp |= (state == true) ? 0x80 : 0x0;
   bno055_writeData(BNO055_SYS_TRIGGER, tmp);
-  bno055_delay(700);
+  bno055_delay(700); // Required delay for the crystal to stabilize after enabling/disabling
 }
 
+/*
+ * @brief Converience functions to enable use of a external crystal oscillator on the BNO055.
+ */
 void bno055_enableExternalCrystal() { bno055_setExternalCrystalUse(true); }
+
+/*
+ * @brief Converience functions to disable use of a external crystal oscillator on the BNO055.
+ */
 void bno055_disableExternalCrystal() { bno055_setExternalCrystalUse(false); }
 
+/**
+ * @brief  Resets the BNO055 sensor. This function will reset all registers to their default values and restart the sensor.
+ * After calling this function, you should call `bno055_setup()` again to reinitialize the sensor and set the desired operation mode.
+ *
+ * @note The reset is triggered by writing 0x20 to the SYS_TRIGGER register.
+ * @note Communication with the sensor should not occur until reset is complete.
+ */
 void bno055_reset() {
   bno055_writeData(BNO055_SYS_TRIGGER, 0x20);
   bno055_delay(700);
@@ -141,7 +170,18 @@ uint8_t bno055_getBootloaderRevision() {
   return tmp;
 }
 
-
+/*
+ * @brief  Gets the system status from the BNO055.
+ * The system status is stored in the BNO055_SYS_STATUS register and is represented as an unsigned 8-bit integer.
+ * System status code:
+ * 	   - 0, 0x00 = Idle
+ * 	   - 1, 0x01 = System error
+ * 	   - 2, 0x02 = Initializing peripherals
+ * 	   - 3, 0x03 = System initialization
+ * 	   - 4, 0x04 = Executing self-test
+ * 	   - 5, 0x05 = Sensor fusion algorithm running
+ * 	   - 6, 0x06 = System running without fusion algorithms
+ */
 uint8_t bno055_getSystemStatus() {
   bno055_setPage(0);
   uint8_t tmp;
@@ -163,7 +203,7 @@ bno055_self_test_result_t bno055_getSelfTestResult() {
 }
 
 /**
- * @brief  Gets the system status/error code from the BNO055.
+ * @brief  Gets the system error code from the BNO055.
  *
  * @retval uint8_t System status code:
  *         - 0, 0x00 = No error
@@ -349,6 +389,21 @@ bno055_vector_t bno055_getVectorQuaternion() {
   return bno055_getVector(BNO055_VECTOR_QUATERNION);
 }
 
+/*
+ * @brief Remaps and inverts the BNO055 coordinate axes.
+ *
+ * This function configures the axis remap and axis sign registers
+ * of the BNO055. It allows the sensor orientation to be adjusted
+ * in software when the sensor is mounted in a non-default orientation.
+ *
+ * Axis remapping changes which physical sensor axis is used as
+ * the logical X, Y, and Z axes.
+ *
+ * Axis sign mapping allows individual axes to be inverted.
+ *
+ * The BNO055 should be placed into CONFIGMODE before calling
+ * this function.
+ */
 void bno055_setAxisMap(bno055_axis_map_t axis) {
   uint8_t axisRemap = (axis.z << 4) | (axis.y << 2) | (axis.x);
   uint8_t axisMapSign = (axis.x_sign << 2) | (axis.y_sign << 1) | (axis.z_sign);
