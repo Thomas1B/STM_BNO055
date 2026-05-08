@@ -50,6 +50,12 @@ for (uint8_t addr = 1; addr < 128; addr++) {
     printf("Device found at address:0x%02X\r\n", addr);
   }
 }
+
+printf("Status: %d \r\n", bno055_getSystemStatus());
+if (bno055_getSystemStatus() != 0) {
+  printf("System Error: %d \r\n", bno055_getSystemError());
+}
+HAL_Delay(2000);
 ```
 - Add to USER CODE BEGIN 3
 ```C
