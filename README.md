@@ -179,7 +179,10 @@ Axis_Sign_Map:
 
 ## Calibration
 
-Read 3.11 of the BNO055 datasheet proper calibration
+Read 3.11 of the BNO055 datasheet for proper calibration.
+
+The sensor auto calibrates on start up everytime, if you do care about accuracy follow the example below.
+Note: This is my example, I'm not 100% certain this is the best way or proper way. Just a method that works for me.
 
 Calibration States:
 | Code | Description    |
@@ -189,16 +192,37 @@ Calibration States:
 | 2    | Mostly         |
 | 3    | Calibrated     |
 
-
+Put the following code under USER CODE BEGIN 3
 ```C
 bno055_calibration_state_t cal = bno055_getCalibrationState();
+printf("Calibration: Sys=%d, Gyro=%d, Accel=%d, Mag=%d\r\n\n", cal.sys,
+    cal.gyro, cal.accel, cal.mag);
 
-printf("SYS: %d\r\n", cal.sys);
-printf("GYRO: %d\r\n", cal.gyro);
-printf("ACCEL: %d\r\n", cal.accel);
-printf("MAG: %d\r\n\n", cal.mag);
+if (cal.gyro == 3 && cal.accel == 3 && cal.mag == 3) {
+  printf("Fully calibrated! Reading calibration data...\r\n");
+  bno055_calibration_data_t calData = bno055_getCalibrationData();
+  printf("Calibration Data:\r\n");
+  printf("Accel Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.accel.x,
+      calData.offset.accel.y, calData.offset.accel.z);
+  printf("Mag Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.mag.x,
+      calData.offset.mag.y, calData.offset.mag.z);
+  printf("Gyro Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.gyro.x,
+      calData.offset.gyro.y, calData.offset.gyro.z);
+  printf("Accel Radius: %d\r\n", calData.radius.accel);
+  printf("Mag Radius: %d\r\n", calData.radius.mag);
 
-HAL_Delay(1000);
+  while (1){}; // Stop here after printing calibration data since it's not expected to change until the next power cycle		}
+
+HAL_Delay(100);
 ```
+
+Here are the units:
+| Value                 | Units            |
+| --------------------- | ---------------- |
+| Accelerometer offsets | 1 LSB = 1 mg     |
+| Magnetometer offsets  | 1 LSB = 1/16 µT  |
+| Gyroscope offsets     | 1 LSB = 1/16 °/s |
+| Accelerometer radius  | 1 LSB = 1 mg     |
+| Magnetometer radius   | 1 LSB = 1/16 µT  |
 
 
