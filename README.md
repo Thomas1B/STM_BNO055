@@ -31,13 +31,13 @@ Sensor datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/
 #define BNO055_I2C_ADDR    BNO055_I2C_ADDR_HI    // For 0x29
 ```
 
-- Add the following to "USER CODE BEGIN Includes"
+- Add to USER CODE BEGIN Includes
 ```C
 #include "bno055_stm32.h"
 #include <stdio.h> // this is for using printf
 ```
 
-- Add the following to "USER CODE BEGIN 2"
+- Add to USER CODE BEGIN 2
 ```C
 // Optional test print
 // Scan the I2C bus for devices and print their addresses
@@ -50,7 +50,7 @@ for (uint8_t addr = 1; addr < 128; addr++) {
 bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 bno055_setup(); // Initialize the BNO055 sensor
 bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
-
+// bno055_setCalibrationData(savedCalData); // read calibration set up in READNE to use this.
 
 HAL_Delay(2000);
 ```
@@ -195,9 +195,6 @@ Use the following code:
 
 ```C
 /* USER CODE BEGIN PV */
-bno055_vector_t v; // Create an instance of the BNO055 sensor structure
-int8_t temperature; // Variable to hold the temperature reading
-
 bno055_calibration_data_t savedCalData = {
 		.offset.accel = { .x = -7, .y = 6, .z =-33 },
 		.offset.mag = { .x = -76, .y = -423, .z = -216 },
@@ -213,6 +210,7 @@ bno055_calibration_data_t savedCalData = {
 bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 bno055_setup();
 bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
+//	bno055_setCalibrationData(savedCalData); // uncomment this to set calibrated data.
 
 bno055_printUnits();
 HAL_Delay(1000);
@@ -228,6 +226,8 @@ This code is used to collect the calibration data. It will stop and hold once th
 - For magnometer: move the advice in a 8 figure.
 
 Once the program has finished and printed the results. Write them down.
+
+After add `bno055_setCalibrationData(savedCalData);`
 
 
 
