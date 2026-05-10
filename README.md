@@ -192,6 +192,21 @@ Calibration States:
 | 2    | Mostly         |
 | 3    | Calibrated     |
 
+
+
+Change USER CODE BEGIN 2 to the code below. This will tells you want use units the sensor are using (see table 3-11: unit selection in bno055).
+```C
+printf("\nBNO055 IMU Sensor Test\r\n");
+
+bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
+bno055_setup();
+bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
+
+bno055_printUnits();
+
+HAL_Delay(2000);
+```
+
 Put the following code under USER CODE BEGIN 3
 ```C
 bno055_calibration_state_t cal = bno055_getCalibrationState();
@@ -201,28 +216,32 @@ printf("Calibration: Sys=%d, Gyro=%d, Accel=%d, Mag=%d\r\n\n", cal.sys,
 if (cal.gyro == 3 && cal.accel == 3 && cal.mag == 3) {
   printf("Fully calibrated! Reading calibration data...\r\n");
   bno055_calibration_data_t calData = bno055_getCalibrationData();
+
   printf("Calibration Data:\r\n");
-  printf("Accel Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.accel.x,
-      calData.offset.accel.y, calData.offset.accel.z);
+  printf("Accel Offsets: X=%d, Y=%d, Z=%d\r\n",
+      calData.offset.accel.x, calData.offset.accel.y,
+      calData.offset.accel.z);
+
   printf("Mag Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.mag.x,
       calData.offset.mag.y, calData.offset.mag.z);
+
   printf("Gyro Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.gyro.x,
       calData.offset.gyro.y, calData.offset.gyro.z);
+
   printf("Accel Radius: %d\r\n", calData.radius.accel);
   printf("Mag Radius: %d\r\n", calData.radius.mag);
 
-  while (1){}; // Stop here after printing calibration data since it's not expected to change until the next power cycle		}
-
+  while (1){};
+}
 HAL_Delay(100);
 ```
+This code is used to collect the calibration data. It will stop and hold once the calibration levels reach 3 for all.
 
-Here are the units:
-| Value                 | Units            |
-| --------------------- | ---------------- |
-| Accelerometer offsets | 1 LSB = 1 mg     |
-| Magnetometer offsets  | 1 LSB = 1/16 µT  |
-| Gyroscope offsets     | 1 LSB = 1/16 °/s |
-| Accelerometer radius  | 1 LSB = 1 mg     |
-| Magnetometer radius   | 1 LSB = 1/16 µT  |
+- For gyroscope: keep it still.
+- For acceleration: move it in 45 degree increments.
+- For magnometer: move the advice in a 8 figure.
+
+Once the program has finished and printed the results. Write them down.
+
 
 
