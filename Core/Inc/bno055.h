@@ -304,6 +304,7 @@ bno055_vector_t bno055_getVectorQuaternion();
 void bno055_setAxisMap(bno055_axis_map_t axis);
 uint8_t bno055_getUnitSelection();
 void bno055_printUnits();
+void bno055_runCalibration();
 
 #ifdef __cplusplus
   }

@@ -48,6 +48,14 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 bno055_vector_t v; // Create an instance of the BNO055 sensor structure
 int8_t temperature; // Variable to hold the temperature reading
+
+bno055_calibration_data_t savedCalData = {
+		.offset.accel = { .x = -7, .y = 6, .z =-33 },
+		.offset.mag = { .x = -76, .y = -423, .z = -216 },
+		.offset.gyro = { .x = -2, .y = -3, .z = -1 },
+		.radius.accel = 1000,
+		.radius.mag = 1484
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,15 +103,15 @@ int main(void) {
 	MX_USART2_UART_Init();
 	MX_I2C1_Init();
 	/* USER CODE BEGIN 2 */
-	printf("\nBNO055 IMU Sensor Test\r\n");
-
 	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 	bno055_setup();
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 
 	bno055_printUnits();
+	HAL_Delay(1000);
+	bno055_setCalibrationData(savedCalData);
 
-	HAL_Delay(2000);
+	bno055_runCalibration();
 
 	/* USER CODE END 2 */
 
@@ -113,33 +121,10 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-		bno055_calibration_state_t cal = bno055_getCalibrationState();
-		printf("Calibration: Sys=%d, Gyro=%d, Accel=%d, Mag=%d\r\n\n", cal.sys,
-				cal.gyro, cal.accel, cal.mag);
 
-		if (cal.gyro == 3 && cal.accel == 3 && cal.mag == 3) {
-			printf("Fully calibrated!\r\n");
-			bno055_calibration_data_t calData = bno055_getCalibrationData();
-
-			printf("Calibration Data:\r\n");
-			printf("Accel Offsets: X=%d, Y=%d, Z=%d\r\n",
-					calData.offset.accel.x, calData.offset.accel.y,
-					calData.offset.accel.z);
-
-			printf("Mag Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.mag.x,
-					calData.offset.mag.y, calData.offset.mag.z);
-
-			printf("Gyro Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.gyro.x,
-					calData.offset.gyro.y, calData.offset.gyro.z);
-
-			printf("Accel Radius: %d\r\n", calData.radius.accel);
-			printf("Mag Radius: %d\r\n", calData.radius.mag);
-
-			while (1){};
-		}
-		HAL_Delay(100);
-		/* USER CODE END 3 */
+//		bno055_runCalibration();
 	}
+	/* USER CODE END 3 */
 }
 
 /**

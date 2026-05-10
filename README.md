@@ -34,7 +34,7 @@ Sensor datasheet: [BNO055](https://www.bosch-sensortec.com/media/boschsensortec/
 - Add the following to "USER CODE BEGIN Includes"
 ```C
 #include "bno055_stm32.h"
-#include <stdio.h>
+#include <stdio.h> // this is for using printf
 ```
 
 - Add the following to "USER CODE BEGIN 2"
@@ -51,10 +51,7 @@ bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 bno055_setup(); // Initialize the BNO055 sensor
 bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF); // Set the operation mode to NDOF (fusion mode)
 
-printf("Status: %d \r\n", bno055_getSystemStatus());
-if (bno055_getSystemStatus() != 0) {
-  printf("System Error: %d \r\n", bno055_getSystemError());
-}
+
 HAL_Delay(2000);
 ```
 - Add to USER CODE BEGIN 3
@@ -62,7 +59,7 @@ HAL_Delay(2000);
 // Add this to "User Code Begin 3"
 bno055_vector_t v = bno055_getVectorEuler();
 printf("Heading: %.2f Roll: %.2f Pitch: %.2f\r\n", v.x, v.y, v.z);
-HAL_Delay(1000);
+HAL_Delay(100);
 ```
 
 Now test the code...
@@ -109,7 +106,7 @@ bno055_setOperationMode(mode); // new mode
 
 This is read by 
 ```C
-uint8_t bno055_getSystemStatus();
+printf("Status: %d \r\n", bno055_getSystemStatus());
 ```
 
 
@@ -134,6 +131,7 @@ These can be ignored if System Status is 0.
 
 This is read by using 
 ```C
+printf("Status: %d \r\n", bno055_getSystemStatus()); // if this is zero, ignore any system error
 printf("Error: %d \r\n", bno055_getSystemError());`
 ```
 
@@ -193,48 +191,36 @@ Calibration States:
 | 3    | Calibrated     |
 
 
+Use the following code:
 
-Change USER CODE BEGIN 2 to the code below. This will tells you want use units the sensor are using (see table 3-11: unit selection in bno055).
 ```C
-printf("\nBNO055 IMU Sensor Test\r\n");
+/* USER CODE BEGIN PV */
+bno055_vector_t v; // Create an instance of the BNO055 sensor structure
+int8_t temperature; // Variable to hold the temperature reading
 
+bno055_calibration_data_t savedCalData = {
+		.offset.accel = { .x = -7, .y = 6, .z =-33 },
+		.offset.mag = { .x = -76, .y = -423, .z = -216 },
+		.offset.gyro = { .x = -2, .y = -3, .z = -1 },
+		.radius.accel = 1000,
+		.radius.mag = 1484
+};
+/* USER CODE END PV */
+```
+
+```C
+/* USER CODE BEGIN 2 */
 bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 bno055_setup();
 bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 
 bno055_printUnits();
+HAL_Delay(1000);
 
-HAL_Delay(2000);
+bno055_runCalibration();
+/* USER CODE END 2 */
 ```
 
-Put the following code under USER CODE BEGIN 3
-```C
-bno055_calibration_state_t cal = bno055_getCalibrationState();
-printf("Calibration: Sys=%d, Gyro=%d, Accel=%d, Mag=%d\r\n\n", cal.sys,
-    cal.gyro, cal.accel, cal.mag);
-
-if (cal.gyro == 3 && cal.accel == 3 && cal.mag == 3) {
-  printf("Fully calibrated! Reading calibration data...\r\n");
-  bno055_calibration_data_t calData = bno055_getCalibrationData();
-
-  printf("Calibration Data:\r\n");
-  printf("Accel Offsets: X=%d, Y=%d, Z=%d\r\n",
-      calData.offset.accel.x, calData.offset.accel.y,
-      calData.offset.accel.z);
-
-  printf("Mag Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.mag.x,
-      calData.offset.mag.y, calData.offset.mag.z);
-
-  printf("Gyro Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.gyro.x,
-      calData.offset.gyro.y, calData.offset.gyro.z);
-
-  printf("Accel Radius: %d\r\n", calData.radius.accel);
-  printf("Mag Radius: %d\r\n", calData.radius.mag);
-
-  while (1){};
-}
-HAL_Delay(100);
-```
 This code is used to collect the calibration data. It will stop and hold once the calibration levels reach 3 for all.
 
 - For gyroscope: keep it still.
