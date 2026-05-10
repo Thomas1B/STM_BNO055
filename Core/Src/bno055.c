@@ -201,6 +201,11 @@ uint8_t bno055_getSystemStatus() {
   return tmp;
 }
 
+/*
+ * @brief  Gets the self-test results from the BNO055.
+ * The self-test results are stored in the BNO055_ST_RESULT register and are represented as a bitfield in an unsigned 8-bit integer.
+ * MCU self-test result (0 = fail, 1 = pass)
+ */
 bno055_self_test_result_t bno055_getSelfTestResult() {
   bno055_setPage(0);
   uint8_t tmp;
@@ -424,3 +429,79 @@ void bno055_setAxisMap(bno055_axis_map_t axis) {
   bno055_writeData(BNO055_AXIS_MAP_CONFIG, axisRemap);
   bno055_writeData(BNO055_AXIS_MAP_SIGN, axisMapSign);
 }
+
+/*
+ * @brief Gets the current axis remap and sign configuration from the BNO055.
+ *
+ * This function reads the axis remap and axis sign registers of the BNO055
+ * and returns a structure containing the current configuration.
+ *
+ * @return Structure containing current axis remap and sign configuration.
+ */
+uint8_t bno055_getUnitSelection() {
+    bno055_setPage(0);
+
+    uint8_t unit;
+    bno055_readData(BNO055_UNIT_SEL, &unit, 1);
+
+    return unit;
+}
+
+/**
+ * @brief Prints the current BNO055 unit configuration.
+ *
+ * Reads the UNIT_SEL register (0x3B) and prints the currently
+ * selected units for acceleration, angular rate, Euler angles,
+ * and temperature.
+ *
+ * UNIT_SEL bit layout:
+ * Bit 0: Acceleration units (0 = m/s^2, 1 = mg)
+ * Bit 1: Angular rate units (0 = degrees/s, 1 = radians/s)
+ * Bit 2: Euler angle units (0 = degrees, 1 = radians)
+ * Bit 4: Temperature units (0 = Celsius, 1 = Fahrenheit)
+ * Bit 7: Fusion output format (0 = Windows, 1 = Android)
+ *  *
+ * Magnetometer units are always microtesla (uT).
+ * Quaternion values are unitless.
+ */
+void bno055_printUnits() {
+
+  uint8_t unit = bno055_getUnitSelection();
+
+  printf("UNIT_SEL = 0x%02X\r\n", unit);
+
+  // Bit 0: acceleration units
+  printf("Bit 0 (Accel Units): %d -> %s\r\n",
+         (unit >> 0) & 0x01,
+         (unit & 0x01) ? "mg" : "m/s^2");
+
+  // Linear acceleration + gravity use same accel setting
+  printf("Linear Accel / Gravity: %s\r\n",
+         (unit & 0x01) ? "mg" : "m/s^2");
+
+  // Bit 1: angular rate units
+  printf("Bit 1 (Gyro Units): %d -> %s\r\n",
+         (unit >> 1) & 0x01,
+         (unit & 0x02) ? "Rps" : "Dps");
+
+  // Bit 2: Euler angle units
+  printf("Bit 2 (Euler Units): %d -> %s\r\n",
+         (unit >> 2) & 0x01,
+         (unit & 0x04) ? "Radians" : "Degrees");
+
+  // Bit 4: temperature units
+  printf("Bit 4 (Temperature Units): %d -> %s\r\n",
+         (unit >> 4) & 0x01,
+         (unit & 0x10) ? "F" : "C");
+
+  printf("Bit 7 (Fusion Format): %d -> %s\r\n",
+         (unit >> 7) & 0x01,
+         (unit & 0x80) ? "Android" : "Windows");
+
+
+  // Fixed units
+  printf("Magnetometer: microtesla (fixed)\r\n");
+  printf("Quaternion: quaternion units (fixed)\r\n\n");
+}
+
+

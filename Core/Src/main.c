@@ -95,24 +95,14 @@ int main(void) {
 	MX_USART2_UART_Init();
 	MX_I2C1_Init();
 	/* USER CODE BEGIN 2 */
-	printf("BNO055 IMU Sensor Test\r\n");
-
-	// Scan the I2C bus for devices and print their addresses
-	for (uint8_t addr = 1; addr < 128; addr++) {
-		if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
-			printf("Device found at address:0x%02X\r\n", addr);
-		}
-	}
+	printf("\nBNO055 IMU Sensor Test\r\n");
 
 	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 	bno055_setup();
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 
+	bno055_printUnits();
 
-	printf("Status: 0x%02X \r\n", bno055_getSystemStatus());
-	if (bno055_getSystemStatus() == 1) {
-		printf("System Error: 0x%02X \r\n", bno055_getSystemError());
-	}
 	HAL_Delay(2000);
 
 	/* USER CODE END 2 */
@@ -123,14 +113,33 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
+		bno055_calibration_state_t cal = bno055_getCalibrationState();
+		printf("Calibration: Sys=%d, Gyro=%d, Accel=%d, Mag=%d\r\n\n", cal.sys,
+				cal.gyro, cal.accel, cal.mag);
 
-		v = bno055_getVectorEuler(); // Get the Euler angles (heading, roll, pitch)
-		printf("Heading: %.2f, Roll: %.2f, Pitch: %.2f\r\n", v.x, v.y, v.z);
+		if (cal.gyro == 3 && cal.accel == 3 && cal.mag == 3) {
+			printf("Fully calibrated!\r\n");
+			bno055_calibration_data_t calData = bno055_getCalibrationData();
 
-		HAL_Delay(1000); // Delay for a while before the next reading
+			printf("Calibration Data:\r\n");
+			printf("Accel Offsets: X=%d, Y=%d, Z=%d\r\n",
+					calData.offset.accel.x, calData.offset.accel.y,
+					calData.offset.accel.z);
 
+			printf("Mag Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.mag.x,
+					calData.offset.mag.y, calData.offset.mag.z);
+
+			printf("Gyro Offsets: X=%d, Y=%d, Z=%d\r\n", calData.offset.gyro.x,
+					calData.offset.gyro.y, calData.offset.gyro.z);
+
+			printf("Accel Radius: %d\r\n", calData.radius.accel);
+			printf("Mag Radius: %d\r\n", calData.radius.mag);
+
+			while (1){};
+		}
+		HAL_Delay(100);
+		/* USER CODE END 3 */
 	}
-	/* USER CODE END 3 */
 }
 
 /**
