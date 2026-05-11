@@ -106,12 +106,12 @@ int main(void) {
 	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 	bno055_setup();
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
-//	bno055_setCalibrationData(savedCalData);
+	bno055_setCalibrationData(savedCalData);
 
-	bno055_printUnits();
+//	bno055_printUnits();
 	HAL_Delay(1000);
 
-	bno055_runCalibration();
+//	bno055_runCalibration();
 
 	/* USER CODE END 2 */
 
@@ -121,8 +121,18 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-
-//		bno055_runCalibration();
+		v = bno055_getVectorEuler();
+		printf("Euler: Heading=%0.2f, Roll=%0.2f, Pitch=%0.2f\r\n", v.x, v.y, v.z);
+		v = bno055_getVectorAccelerometer();
+		printf("Accel: X=%0.2f m/s^2, Y=%0.2f m/s^2, Z=%0.2f m/s^2\r\n", v.x, v.y, v.z);
+		v = bno055_getVectorGyroscope();
+		printf("Gyro: X=%0.2f dps, Y=%0.2f dps, Z=%0.2f dps\r\n", v.x, v.y, v.z);
+		v = bno055_getVectorMagnetometer();
+		printf("Mag: X=%0.2f uT, Y=%0.2f uT, Z=%0.2f uT\r\n", v.x, v.y, v.z);
+		temperature = bno055_getTemp();
+		printf("Temperature: %d C\r\n", temperature);
+		printf("\r\n");
+		HAL_Delay(1000);
 	}
 	/* USER CODE END 3 */
 }

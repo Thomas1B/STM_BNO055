@@ -506,6 +506,13 @@ void bno055_printUnits() {
 	printf("Quaternion: quaternion units (fixed)\r\n");
 }
 
+/*
+ * @brief  Runs the calibration process for the BNO055 sensor.
+ *
+ * This function guides the user through the calibration process for the gyroscope, accelerometer, and magnetometer.
+ * It continuously checks the calibration status and provides instructions to the user until all sensors are fully calibrated.
+ * Once calibration is complete, it prints the calibration data and system status.
+ */
 void bno055_runCalibration() {
 	printf("Starting calibration process...\r\n");
 	bno055_calibration_state_t cal = bno055_getCalibrationState();

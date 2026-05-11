@@ -28,4 +28,4 @@
 ../Core/Src/bno055.c:434:6:bno055_setAxisMap	24	static
 ../Core/Src/bno055.c:450:9:bno055_getUnitSelection	16	static
 ../Core/Src/bno055.c:476:6:bno055_printUnits	16	static
-../Core/Src/bno055.c:509:6:bno055_runCalibration	48	static
+../Core/Src/bno055.c:516:6:bno055_runCalibration	48	static
