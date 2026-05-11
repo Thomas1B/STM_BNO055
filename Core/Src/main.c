@@ -106,10 +106,10 @@ int main(void) {
 	bno055_assignI2C(&hi2c1); // Assign the I2C handle to the BNO055 library
 	bno055_setup();
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
+//	bno055_setCalibrationData(savedCalData);
 
 	bno055_printUnits();
 	HAL_Delay(1000);
-	bno055_setCalibrationData(savedCalData);
 
 	bno055_runCalibration();
 
